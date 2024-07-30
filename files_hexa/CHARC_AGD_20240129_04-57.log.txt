@@ -1,0 +1,78 @@
+%-12345XE
+---------------------------
+
+ OPTI Medical OPTI CCA-TS2
+       Patient Report
+      28-Jan-24  09:09
+
+PATIENT INFORMATION
+Patient ID:
+ 240128003831
+DOB:
+Temperature:    36.6 C
+
+Sample No.:     2015
+
+ACID/BASE
+pH         7.417 
+PCO2       29.8 mmHg
+PO2         86.5 mmHgfil
+BE         -4.7 mmol/L
+tCO2       19.7 mmol/L
+HCO3        18.8 mmol/L
+stHCO3     20.6 mmol/L
+
+ELECTROLYTES
+Na+       122.6 mmol/L
+K+         3.32 mmol/L
+Cl-         96.0 mmol/L
+AnGap       11.2 mmol/L
+
+HEMOGLOBIN/OXYGEN STATUS
+tHb         12.1 g/dL
+SO2         97.0 %
+Hct(c)      36.5 %
+SO2(c)      96.6 %
+O2Ct        16.6 %vol
+
+TEMPERATURE CORRECTED
+pH         7.423 
+PCO2       29.3 mmHg
+PO2         84.3 mmHg
+
+ENTERED PARAMETERS
+FIO2:           0.30
+Barometer: 733.6 mmHg
+User ID:
+ YS
+Lot:337312
+S/N: 3747
+Version: 2.00.0009
+
+
+REFERENCE RANGES
+pH   7.200 - 7.600 
+PCO2  30.0 -  50.0 mmHg
+PO2   70.0 - 700.0 mmHg
+Na+  135.0 - 145.0 mmol/L
+K+    3.50 -  5.10 mmol/L
+Cl-   95.0 - 115.0 mmol/L
+tHb   12.0 -  17.0 g/dL
+SO2   90.0 - 100.0 %
+
+
+MESSAGES
+PCO2 under 30.0 (Ref.Lim).
+K+ under 3.50 (Ref.Lim).
+Na+ under 135.0 (Ref.Lim).
+
+
+
+---------------------------
+
+
+
+
+
+
+E%-12345X

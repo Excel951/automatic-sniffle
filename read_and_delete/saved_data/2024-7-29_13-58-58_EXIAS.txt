@@ -1,0 +1,1 @@
+{"parameter": [{"parameter": "Na", "nilai": "119.7"}, {"parameter": "K", "nilai": "2.02"}, {"parameter": "Cl", "nilai": "83.8"}, {"parameter": "Ca", "nilai": "1.532"}, {"parameter": "pH", "nilai": "7.138"}, {"parameter": "Hct", "nilai": "57.9"}]}

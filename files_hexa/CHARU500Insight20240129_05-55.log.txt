@@ -1,0 +1,17 @@
+
+ 01-29-2024 07:53:16
+ ID:  
+ No.: 03132      (00008568)
+ Color:             Other
+ Clarity:           Other
+*LEU        2+  125Leu/uL
+ NIT         -        neg
+ URO        +-     1mg/dL
+*PRO        1+    30mg/dL
+ pH         6.0          
+*BLO        3+  200Ery/uL
+ SG         1.020        
+ KET         -        neg
+ BIL         -        neg
+ GLU         -        neg
+
