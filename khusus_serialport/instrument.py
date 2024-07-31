@@ -26,6 +26,8 @@ class VirtualInstrument:
 
     def close(self):
         self.ser.close()
+        print("Serial port closed")
+        sys.exit()
 
     def run(self):
         while True:
@@ -41,7 +43,6 @@ class VirtualInstrument:
                 if incoming_message.startswith('<EOT>'):
                     # self.send_message('<ACK>')
                     self.close()
-                    sys.exit()
                     incoming_message=''
                     # self.send_message('<STX>1...Data...<CR><ETX>xx<CR><LF>')
                     # self.send_message('<EOT>')

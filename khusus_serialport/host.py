@@ -33,6 +33,7 @@ class Host:
     def close(self):
         self.ser.close()
         print("Serial port closed")
+        sys.exit()
 
     def run(self):
         self.send_mssg('<ENQ>')
@@ -56,7 +57,6 @@ class Host:
                     incoming_message = ''
                     print(f'Index: {index}')
                     self.close()
-                    sys.exit()
 
 def send_data(port_name, data):
     """Send data to the specified serial port."""
