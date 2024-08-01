@@ -77,22 +77,22 @@ class VirtualInstrument:
 
     def calculate_checksum(self, data):
         # Menghapus karakter kontrol seperti <STX>, <CR>, <ETX>, dan <LF>
-        # frame_data = re.findall(r'<(.*<CR><ETX>)[\d\w]+<CR><LF>', data)
-        # print(frame_data[0])
-        # Menghitung checksum dengan menjumlahkan byte ASCII dan mengambil modulus 256
-        checksum = sum(data.encode('ascii')) % 256
+        checksum = 0
+        for byte in data:
+            checksum = (checksum + byte) % 256
         return checksum
 
     def send_data(self):
         max_chunk_data = 240 * 2 # doubled because using hex
         dummy = [
-            "H|^&|||Sender^ID|||20240731120000|||||P|1|20240731120000",
-            "P|1|123456||Doe^John||19600101|M|||123 Main St^^Anytown^AN^12345|123-456-7890|||||||||",
-            "P|2|789101|Smith^Jane||19750323|F|||456 Oak St^^Othertown^OT^67890|987-654-3210|||||||||",
-            "O|1|ORD123|TestCode1^TestDescription1^^^|||20240731120000||||||1|||||||F",
-            "O|2|ORD124|TestCode2^TestDescription2^^^|||20240731120000||||||2|||||||F",
-            "O|3|ORD125|TestCode3^TestDescription3^^^|||20240731120000||||||3|||||||F",
-            "L|1|N"
+            # "H|^&|||Sender^ID|||20240731120000|||||P|1|20240731120000",
+            # "P|1|123456||Doe^John||19600101|M|||123 Main St^^Anytown^AN^12345|123-456-7890|||||||||",
+            # "P|2|789101|Smith^Jane||19750323|F|||456 Oak St^^Othertown^OT^67890|987-654-3210|||||||||",
+            # "O|1|ORD123|TestCode1^TestDescription1^^^|||20240731120000||||||1|||||||F",
+            # "O|2|ORD124|TestCode2^TestDescription2^^^|||20240731120000||||||2|||||||F",
+            # "O|3|ORD125|TestCode3^TestDescription3^^^|||20240731120000||||||3|||||||F",
+            # "L|1|N"
+            "H|\^&|||ABX|||||||P|E1394-97|20050111111502"
         ]
         failure_count = 0
         while True:
@@ -112,19 +112,37 @@ class VirtualInstrument:
             # formated_data += f'{hex(checksum)[2:]}{CR}{LF}5c6e'
             # formated_data += f'{hex(checksum)}<CR><LF>\n'
 
+            # TAMBAHKAN INDEX DI AWAL DATA
             data = str(index+1) + data
-            checksum = self.calculate_checksum(data)
-            chunks = [data[i:i + max_chunk_data] for i in range(0, len(data), max_chunk_data)]
 
-            for i, chunk in enumerate(chunks):
-                if i < len(chunks) - 1:
-                    # Send intermediate chunks with <ETB>
-                    message = STX.hex() + chunk.encode().hex() + CR.hex() + ETB.hex()
-                else:
-                    # Send the last chunk with <ETX>
-                    message = STX.hex() + chunk.encode().hex() + CR.hex() + ETX.hex()
-                    message += hex(checksum)[2:] + CR.hex() + LF.hex()
-                self.send_message(bytes(message.encode()))
+            # BUILD DATA UNTUK CARI CHECKSUM DARI DATA + CR + ETX
+            data_for_checksum = bytearray(data.encode() + CR + ETX)
+
+            # BUILD DATA MESSAGE
+            data = STX.hex() + data.encode().hex() + CR.hex() + ETX.hex()
+            # print(f"Hex Data: {data}")
+            # print(f"Data for Checksum: {data_for_checksum}")
+
+            # HITUNG CHECKSUM
+            checksum = self.calculate_checksum(data_for_checksum)
+            # print(f"Checksum: {checksum}")
+            # print(f"Hex Checksum: {hex(checksum)[2:]}")
+
+            # BUILD DATA YANG AKAN DIKIRIM
+            message = data + hex(checksum)[2:] + CR.hex() + LF.hex()
+            # print(f'Message: {message}')
+
+            # MEMBATASI SPY TIDAK LEBIH DARI 240 CHAR
+            # chunks = [data[i:i + max_chunk_data] for i in range(0, len(data), max_chunk_data)]
+            # for i, chunk in enumerate(chunks):
+            #     if i < len(chunks) - 1:
+            #         # Send intermediate chunks with <ETB>
+            #         message = STX.hex() + chunk + CR.hex() + ETB.hex()
+            #     else:
+            #         # Send the last chunk with <ETX>
+            #         message = STX.hex() + chunk + CR.hex() + ETX.hex()
+            #         message += hex(checksum)[2:] + CR.hex() + LF.hex()
+            self.send_message(bytes(message.encode()))
 
             status_reply = False
             while not status_reply:
