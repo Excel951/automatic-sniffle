@@ -22,20 +22,35 @@ class Host:
 
     def send_message(self, message):
         if self.ser.is_open:
-            self.ser.write(message.encode('ascii'))
-            # self.ser.write(message)
+            # self.ser.write(message.encode('ascii'))
+            self.ser.write(message)
             print(f'Sent: {message}')
         else:
             print("Serial port is not open")
 
     def receive_message(self):
         if self.ser.is_open:
-            response = self.ser.readline().decode('ascii').strip()
-            print(f"Received: {response}")
-            return response
+            res = self.ser.readline()
+            print(f"Received: {res}")
+            return res
         else:
             print("Serial port is not open")
             return None
+        # if self.ser.is_open:
+        #     data = b''
+        #     while True:
+        #         byte = self.ser.readline()
+        #         if not byte:
+        #             break
+        #         data += byte
+        #         if byte.endswith():
+        #             break
+        #         print(f'{byte}')
+        #     print(f"Received: {data}")
+        #     return data
+        # else:
+        #     print("Serial port is not open")
+        #     return None
 
     def close(self):
         self.ser.close()
@@ -80,23 +95,27 @@ class Host:
 
     def receive_data(self):
         init = True
+        data = []
         while True:
             incoming_message = self.receive_message()
             if incoming_message:
-                if incoming_message.startswith('<ENQ>') and init:
-                # if incoming_message == ENQ.decode() and init:
-                    self.send_message("<ACK>")
+                print('Incoming message: {}'.format(incoming_message.decode('utf-8')))
+                # if incoming_message.startswith('<ENQ>') or incoming_message.startswith(ENQ) and init:
+                if incoming_message == ENQ and init:
+                    self.send_message(ACK)
+                    data.append(incoming_message)
                     incoming_message = ''
                     init = False
                     # Simulate data transmission
-                if incoming_message.startswith('<STX>'):
-                # if STX.decode() in incoming_message:
-                    print('kerja')
-                    self.send_message("<ACK>")
+                # if incoming_message.startswith('<STX>') or incoming_message.startswith(STX):
+                elif incoming_message.decode('utf-8').startswith('02'):
+                    self.send_message(ACK)
+                    data.append(incoming_message)
                     incoming_message = ''
-                if incoming_message.startswith('<EOT>'):
-                # if incoming_message == EOT.decode():
-                    self.send_message("<ACK>")
+                # if incoming_message.startswith('<EOT>') or incoming_message.startswith(EOT):
+                elif incoming_message == EOT:
+                    self.send_message(ACK)
+                    data.append(incoming_message)
                     self.close()
                     incoming_message = ''
                     # self.send_message('<STX>1...Data...<CR><ETX>xx<CR><LF>')

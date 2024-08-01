@@ -49,6 +49,7 @@ def checking_port(port_name):
                 if data_raw:
                     print("Data received")
 
+
                     # JANGAN DIHAPUS
                     # ===============================================
                     # print("Converting data")

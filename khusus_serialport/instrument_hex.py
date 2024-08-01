@@ -21,17 +21,31 @@ class VirtualInstrument:
 
     def send_message(self, message):
         if self.ser.is_open:
-            self.ser.write(message.encode('ascii'))
-            # self.ser.write(message)
+            # self.ser.write(message.encode('ascii'))
+            self.ser.write(message)
             print(f"Sent: {message}")
         else:
             print("Serial port is not open")
 
     def receive_message(self):
+        # if self.ser.is_open:
+        #     response = self.ser.readline().decode('ascii').strip()
+        #     print(f"Received: {response}")
+        #     return response
+        # else:
+        #     print("Serial port is not open")
+        #     return None
         if self.ser.is_open:
-            response = self.ser.readline().decode('ascii').strip()
-            print(f"Received: {response}")
-            return response
+            data = b''
+            while True:
+                byte = self.ser.read(1)
+                print(f"Received: {byte}")
+                if not byte:
+                    break
+                data += byte
+                if byte == ETX:
+                    break
+            return data
         else:
             print("Serial port is not open")
             return None
@@ -82,7 +96,7 @@ class VirtualInstrument:
         ]
         failure_count = 0
         while True:
-            self.send_message("<ENQ>")
+            self.send_message(ENQ)
             response = self.receive_message()
             if response == ACK:
                 break
@@ -92,14 +106,33 @@ class VirtualInstrument:
             else:
                 time.sleep(2)
         for index, data in enumerate(dummy):
-            formated_data = f'<STX>{index}{data}<CR><ETX>'
-            formated_data = f'<STX>{index.encode().hex()}{str(data).encode().hex()}<CR><ETX>'
-            checksum = self.calculate_checksum(formated_data)
-            formated_data += f'{hex(checksum)[2:]}<CR><LF>\n'
+            # formated_data = f'<STX>{index}{data}<CR><ETX>'
+            # formated_data = f'{STX}{index.encode().hex()}{str(data).encode().hex()}{CR}{ETX}'
+            # checksum = self.calculate_checksum(formated_data)
+            # formated_data += f'{hex(checksum)[2:]}{CR}{LF}5c6e'
             # formated_data += f'{hex(checksum)}<CR><LF>\n'
 
-            self.send_message(formated_data)
-            response = self.receive_message()
+            data = str(index+1) + data
+            checksum = self.calculate_checksum(data)
+            chunks = [data[i:i + max_chunk_data] for i in range(0, len(data), max_chunk_data)]
+
+            for i, chunk in enumerate(chunks):
+                if i < len(chunks) - 1:
+                    # Send intermediate chunks with <ETB>
+                    message = STX.hex() + chunk.encode().hex() + CR.hex() + ETB.hex()
+                else:
+                    # Send the last chunk with <ETX>
+                    message = STX.hex() + chunk.encode().hex() + CR.hex() + ETX.hex()
+                    message += hex(checksum)[2:] + CR.hex() + LF.hex()
+                self.send_message(bytes(message.encode()))
+
+            status_reply = False
+            while not status_reply:
+                response = self.receive_message()
+                if response == ACK:
+                    status_reply = True
+
+            # self.send_message(formated_data)
         self.send_message(EOT)
         self.close()
 

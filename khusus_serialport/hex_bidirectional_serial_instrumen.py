@@ -13,10 +13,19 @@ from parse_data.utils import convert
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), 'parse_data'))
 
-ENQ = [0x05] # ENQUIRY
-ACK = [0x06] # ACKNOWLEDGE
-EOT = [0x04] # END OF TEXT
-LF = [0x0A] # LINE FEED
+# ENQ = [0x05] # ENQUIRY
+# ACK = [0x06] # ACKNOWLEDGE
+# EOT = [0x04] # END OF TEXT
+# LF = [0x0A] # LINE FEED
+ENQ = b'\x05'  # ENQUIRY
+ACK = b'\x06'  # ACKNOWLEDGE
+NAK = b'\x15'  # NOT ACKNOWLEDGE
+STX = b'\x02'  # START OF TEXT
+ETX = b'\x03'  # END OF TEXT
+ETB = b'\x17'  # PERTENGAHAN DATA
+CR = b'\x0D'  #
+LF = b'\x0A'  # LINE FEED
+EOT = b'\x04'  # END OF DATA
 
 def open_serial_port(port_name):
     """Open a serial port with the given port name."""
@@ -42,7 +51,7 @@ def checking_port(port_name):
                 if ser.is_open and is_first_time_opened is not True:
                     is_first_time_opened = True
                     print(f'Serial port {port_name} is open')
-                    ser.write("<ENQ>".encode())
+                    ser.write(ENQ)
                     reply = ser.in_waiting
                     while reply == 0:
                         data_raw = ser.read(ser.in_waiting)
